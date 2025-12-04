@@ -2,26 +2,23 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import { GoogleGenAI } from "@google/genai";
+import { procurementSchema } from "./types/itemSchema.js";
+import { z } from "zod";
+import { PrismaClient } from "./generated/prisma/client.js";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
+
 
 dotenv.config();
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-type ProcurementRequest = {
-  originalText: string;
-  budget: {
-    amount: number;
-    currency: string;
-  } | null;
-  deliveryDays: number | null;
-  items: {
-    itemType: "laptop" | "monitor" | "other";
-    quantity: number;
-    ramGb?: number;
-    screenSizeInches?: number;
-  }[];
-  paymentTerms: string | null;
-  warrantyMonths: number | null;
-};
-
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+const procurementJsonSchema = z.toJSONSchema(procurementSchema, {
+  target: "draft-2020-12", 
+});
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
@@ -32,74 +29,48 @@ app.use(express.json());
 
 app.post("/", async (req, res) => {
   try {
-    // assuming frontend sends { "userText": "..." }
     const userText: string = req.body.userText;
 
     if (typeof userText !== "string") {
       return res.status(400).json({ error: "userText must be a string" });
     }
 
+    const prompt = `
+Extract structured procurement data from the following text.
+Return ONLY valid JSON that matches the given schema.
+Capture all important details: budget, delivery timeline, payment terms,
+warranty, and a list of distinct items with name, category, quantity, and specs.
+
+Text:
+${userText}
+    `.trim();
+
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: userText,
+      contents: prompt,
       config: {
         responseMimeType: "application/json",
-        responseJsonSchema: {
-          type: "object",
-          properties: {
-            originalText: { type: "string" },
-
-            budget: {
-              type: ["object", "null"],
-              properties: {
-                amount: { type: "number" },
-                currency: { type: "string" }
-              },
-              required: ["amount", "currency"]
-            },
-
-            deliveryDays: {
-              type: ["integer", "null"]
-            },
-
-            items: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  itemType: {
-                    type: "string",
-                    enum: ["laptop", "monitor", "other"]
-                  },
-                  quantity: { type: "integer" },
-                  ramGb: { type: ["integer", "null"] },
-                  screenSizeInches: { type: ["number", "null"] }
-                },
-                required: ["itemType", "quantity"]
-              }
-            },
-
-            paymentTerms: {
-              type: ["string", "null"]
-            },
-
-            warrantyMonths: {
-              type: ["integer", "null"]
-            }
-          },
-          required: ["originalText", "items"]
-        }
-      }
+        responseJsonSchema: procurementJsonSchema,
+      },
     });
 
-    const structured = JSON.parse(response.text!);
+    const raw = response.text!;
+    const parsed = JSON.parse(raw);
 
-    // Here `structured` is perfect to store as JSONB
-    // e.g. INSERT INTO requests(data) VALUES ($1::jsonb)
+    const structured = procurementSchema.parse(parsed);
+
+    await prisma.rfp.create({
+  data: {
+    originalText: structured.originalText, 
+    structured: structured, 
+  },
+});
+
+
 
     return res.json({
       message: "Welcome",
-      data: structured
+      data: structured,
     });
   } catch (err) {
     console.error(err);
