@@ -7,6 +7,9 @@ import { z } from "zod";
 import { PrismaClient } from "./generated/prisma/client.js";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
+import FormData from "form-data";
+import Mailgun from "mailgun.js";
+import { buildRfpEmailWithAI } from "./JSONtoEmail.js";
 
 
 dotenv.config();
@@ -64,11 +67,9 @@ ${userText}
     originalText: structured.originalText, 
     structured: structured, 
   },
+ 
 });
-
-
-
-    return res.json({
+return res.json({
       message: "Welcome",
       data: structured,
     });
@@ -77,6 +78,56 @@ ${userText}
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+
+app.post("/send-rfp", async (req, res) => {
+  try {
+    const { rfpId, email } = req.body as {
+      rfpId: number;
+      email: string | string[];
+    };
+
+    if (!rfpId) return res.status(400).json({ error: "rfpId is required" });
+    if (!email) return res.status(400).json({ error: "email is required" });
+
+    const rfp = await prisma.rfp.findUnique({
+      where: { id: rfpId },
+    });
+
+    if (!rfp) {
+      return res.status(404).json({ error: "RFP not found" });
+    }
+
+    const structured = rfp.structured as any;
+
+    const { subject, body } = await buildRfpEmailWithAI(structured);
+
+    const toArray = Array.isArray(email) ? email : [email];
+      const mailgun = new Mailgun(FormData);
+    const mg = mailgun.client({
+    username: "api",
+    key: process.env.API_KEY! || "API_KEY",
+  });
+
+    await mg.messages.create(process.env.MAILGUN!, {
+      from:process.env.FROM_EMAIL!,
+      to: toArray,
+      subject,
+      text: body, 
+    });
+
+    return res.json({
+      message: "RFP sent successfully via Mailgun",
+      rfpId,
+      to: toArray,
+    });
+  } catch (err) {
+    console.error("Error sending RFP email (Mailgun):", err);
+    return res.status(500).json({ error: "Failed to send email" });
+  }
+});
+
+
+    
 
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");

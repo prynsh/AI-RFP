@@ -21,3 +21,9 @@ model Rfp{
   createdAt     DateTime @default(now())
 
 }
+
+model Vendors{
+  id          Int @unique @default(autoincrement())
+  name        String
+  email       String
+}
