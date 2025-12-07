@@ -1,74 +1,63 @@
+// helperFunctions/comparison.ts
 import { ai } from "../clients/Gemini.js";
+import type { VendorReply } from "../types/types.js";
+// import your AI client here
 
-
-export type VendorReplySummary = {
-  vendorEmail: string;
-  summary: string; 
-};
-
-export async function compareVendorsForRfp(options: {
-  rfpOriginalText: string;
-  rfpStructured?: any;
-  vendorReplies: VendorReplySummary[];
+export async function compareVendorsForRfp({
+  rfpOriginalText,
+  rfpStructured,
+  vendorReplies,
+}: {
+  rfpOriginalText: string | null;
+  rfpStructured: any;
+  vendorReplies: VendorReply[];
 }): Promise<string> {
-  const { rfpOriginalText, rfpStructured, vendorReplies } = options;
-
-  if (vendorReplies.length === 0) {
-    return "No vendor replies have been received yet for this RFP.";
-  }
-
-  const vendorsBlock = vendorReplies
-    .map(
-      (v, idx) => `
-Vendor ${idx + 1}:
-Email: ${v.vendorEmail}
-Summary:
-${v.summary}
-`
-    )
-    .join("\n\n");
-
-  const structuredBlock = rfpStructured
-    ? `STRUCTURED RFP (JSON-ish, for context only):\n${JSON.stringify(
-        rfpStructured,
-        null,
-        2
-      )}\n\n`
-    : "";
-
   const prompt = `
-You are assisting a procurement team comparing vendor responses to an RFP.
+You are helping a procurement manager compare vendor proposals.
 
-RFP (original text):
-${rfpOriginalText}
+RFP (original):
+${rfpOriginalText ?? "N/A"}
 
-${structuredBlock}
-Vendor replies (already pre-parsed by another AI into concise summaries):
+RFP (structured JSON):
+${JSON.stringify(rfpStructured, null, 2)}
 
-${vendorsBlock}
+Vendor replies:
+${JSON.stringify(vendorReplies, null, 2)}
 
-Task:
-Compare the vendors along these dimensions:
-- Pricing (who is cheaper / more expensive, and in what way)
-- Payment terms (favorable vs strict)
-- Delivery timeline (faster vs slower)
-- Warranty / support
-- Key terms & conditions (important differences or risks)
-- Overall completeness of their response (1–5 score: 1 = very incomplete, 5 = very complete)
+Generate a clear comparison between vendors and a recommendation.
 
-Return a clear, human-readable comparison with:
-1) A short overview paragraph.
-2) A table-like section per vendor (Vendor email, price, terms, delivery, warranty, completeness score, key pros, key cons).
-3) A final recommendation: which vendor(s) seem best and why.
+Return ONLY valid HTML, no backticks, no explanations outside HTML.
+The HTML must follow this structure:
 
-Important:
-- Base your analysis ONLY on the summaries provided.
-- If some detail is missing for a vendor, explicitly say "Not specified" for that part.
-  `.trim();
+1. A short heading and paragraph (overall summary).
+2. A comparison table with a header row and one row per vendor.
+   Columns:
+   - Vendor
+   - Pricing
+   - Terms
+   - Completeness of Response
+   - Overall Score (0–100)
+   - Key Notes
+3. A final section titled "Recommendation" that clearly answers:
+   - Which vendor should we go with?
+   - Why?
 
-  const result = await ai.models.generateContent({ model: "gemini-2.5-flash", contents: prompt });
+Use simple semantic HTML like:
 
- 
+<h2>...</h2>
+<p>...</p>
+<table>...</table>
+<h3>Recommendation</h3>
+<p>...</p>
+<ul>...</ul>
+  `;
 
-  return result.text!.trim();
+  // Example with a generic client – replace with your actual call:
+  
+    const aiResponseText = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+     }) 
+     const text = aiResponseText.text!;
+  return text; 
 }
