@@ -1,5 +1,6 @@
 // helperFunctions/comparison.ts
 import { ai } from "../clients/Gemini.js";
+import { GEMINI_MODEL } from "../constants/constant.js";
 import type { VendorReply } from "../types/types.js";
 // import your AI client here
 
@@ -55,7 +56,7 @@ Use simple semantic HTML like:
   // Example with a generic client – replace with your actual call:
   
     const aiResponseText = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: GEMINI_MODEL,
       contents: prompt,
      }) 
      const text = aiResponseText.text!;

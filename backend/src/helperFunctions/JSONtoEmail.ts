@@ -1,4 +1,5 @@
 import { ai } from "../clients/Gemini.js";
+import { GEMINI_MODEL } from "../constants/constant.js";
 
 
 
@@ -32,7 +33,7 @@ ${JSON.stringify(structured, null, 2)}
 `.trim();
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
+    model: GEMINI_MODEL,
     contents: prompt,
     config: {
       responseMimeType: "application/json",

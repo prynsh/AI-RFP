@@ -1,4 +1,5 @@
 import { ai } from "../clients/Gemini.js";
+import { GEMINI_MODEL } from "../constants/constant.js";
 
 function getRawText(bodyText?: string, bodyHtml?: string): string {
   if (bodyText && bodyText.trim().length > 0) return bodyText;
@@ -58,7 +59,7 @@ Email body:
 ${rawBody}
   `.trim();
 
-  const result = await ai.models.generateContent({ model: "gemini-2.5-flash",contents:prompt });
+  const result = await ai.models.generateContent({ model:GEMINI_MODEL,contents:prompt });
 
  
 
