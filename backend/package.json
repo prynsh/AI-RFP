@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsc -b && node dist/src/index.js"
+    "dev": "tsc -b && node dist/src/index.js",
+    "seed": "tsc -b  && node dist/src/seed.js"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,8 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "prisma": "^7.1.0"
+    "@types/node": "^24.10.1",
+    "prisma": "^7.1.0",
+    "ts-node": "^10.9.2"
   }
 }

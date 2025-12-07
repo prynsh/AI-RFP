@@ -9,4 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Rfp.js'
+export type * from './models/Vendors.js'
+export type * from './models/SentRfp.js'
+export type * from './models/Replies.js'
 export type * from './commonInputTypes.js'

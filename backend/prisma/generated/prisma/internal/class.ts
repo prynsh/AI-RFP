@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.1.0",
   "engineVersion": "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba",
   "activeProvider": "postgresql",
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"./generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Rfp {\n  id           Int      @unique @default(autoincrement())\n  originalText String\n  structured   Json\n  createdAt    DateTime @default(now())\n}\n",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"./generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Rfp {\n  id           Int      @id @default(autoincrement())\n  originalText String\n  structured   Json\n  createdAt    DateTime @default(now())\n\n  sentRfps SentRfp[]\n}\n\nmodel Vendors {\n  id    Int    @id @default(autoincrement())\n  name  String\n  email String @unique\n}\n\nmodel SentRfp {\n  id               Int       @id @default(autoincrement())\n  rfp              Rfp       @relation(fields: [rfpId], references: [id])\n  rfpId            Int\n  vendorEmail      String\n  mailgunMessageId String\n  replies          Replies[]\n}\n\nmodel Replies {\n  id        Int     @id @default(autoincrement())\n  emailId   String\n  emailBody String\n  parsed    String\n  sentRfp   SentRfp @relation(fields: [sentRfpId], references: [id])\n  sentRfpId Int\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Rfp\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"originalText\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"structured\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Rfp\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"originalText\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"structured\",\"kind\":\"scalar\",\"type\":\"Json\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"sentRfps\",\"kind\":\"object\",\"type\":\"SentRfp\",\"relationName\":\"RfpToSentRfp\"}],\"dbName\":null},\"Vendors\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"SentRfp\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"rfp\",\"kind\":\"object\",\"type\":\"Rfp\",\"relationName\":\"RfpToSentRfp\"},{\"name\":\"rfpId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"vendorEmail\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"mailgunMessageId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"replies\",\"kind\":\"object\",\"type\":\"Replies\",\"relationName\":\"RepliesToSentRfp\"}],\"dbName\":null},\"Replies\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"emailId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailBody\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"parsed\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sentRfp\",\"kind\":\"object\",\"type\":\"SentRfp\",\"relationName\":\"RepliesToSentRfp\"},{\"name\":\"sentRfpId\",\"kind\":\"scalar\",\"type\":\"Int\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
@@ -183,6 +183,36 @@ export interface PrismaClient<
     * ```
     */
   get rfp(): Prisma.RfpDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.vendors`: Exposes CRUD operations for the **Vendors** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Vendors
+    * const vendors = await prisma.vendors.findMany()
+    * ```
+    */
+  get vendors(): Prisma.VendorsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.sentRfp`: Exposes CRUD operations for the **SentRfp** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SentRfps
+    * const sentRfps = await prisma.sentRfp.findMany()
+    * ```
+    */
+  get sentRfp(): Prisma.SentRfpDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.replies`: Exposes CRUD operations for the **Replies** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Replies
+    * const replies = await prisma.replies.findMany()
+    * ```
+    */
+  get replies(): Prisma.RepliesDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {

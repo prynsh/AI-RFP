@@ -1,13 +1,10 @@
+import { ai } from "../clients/Gemini.js";
 
-import { GoogleGenAI } from "@google/genai";
-import dotenv from "dotenv"
 
-dotenv.config();
+
 export type RfpStructured = any;
 
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
 export async function buildRfpEmailWithAI(structured: RfpStructured) {
   const prompt = `

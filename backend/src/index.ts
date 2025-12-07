@@ -1,135 +1,139 @@
-import dotenv from "dotenv";
-import express from "express";
-import cors from "cors";
-import { GoogleGenAI } from "@google/genai";
-import { procurementSchema } from "./types/itemSchema.js";
-import { z } from "zod";
-import { PrismaClient } from "./generated/prisma/client.js";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { Pool } from "pg";
-import FormData from "form-data";
-import Mailgun from "mailgun.js";
-import { buildRfpEmailWithAI } from "./JSONtoEmail.js";
-
-
-dotenv.config();
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
-const procurementJsonSchema = z.toJSONSchema(procurementSchema, {
-  target: "draft-2020-12", 
-});
-
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
-const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+import express from "express"
+import cors from "cors"
+import { createRfpFromUserText } from "./services/createRfpfromUserText.js";
+import { prisma } from "./clients/PrismaClient.js";
+import type { MailgunInboundEmail, SendRfpRequest } from "./types/types.js";
+import { processInboundVendorReply } from "./services/processInboundReply.js";
+import { generateVendorComparison } from "./services/vendorComparison.js";
+import { sendRfpToVendors } from "./services/sendRfpToVendors.js";
+import { PORT } from "./constants/constant.js";
 
 const app = express();
+
 app.use(cors());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.post("/", async (req, res) => {
-  try {
-    const userText: string = req.body.userText;
 
-    if (typeof userText !== "string") {
-      return res.status(400).json({ error: "userText must be a string" });
+//route to structure raw text
+app.post("/structured-response", async (req, res) => {
+  try {
+    const { userText } = req.body;
+
+    if (typeof userText !== "string" || !userText.trim()) {
+      return res.status(400).json({
+        error: "userText is required and must be a non-empty string",
+      });
     }
 
-    const prompt = `
-Extract structured procurement data from the following text.
-Return ONLY valid JSON that matches the given schema.
-Capture all important details: budget, delivery timeline, payment terms,
-warranty, and a list of distinct items with name, category, quantity, and specs.
+    const result = await createRfpFromUserText(userText);
 
-Text:
-${userText}
-    `.trim();
-
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseJsonSchema: procurementJsonSchema,
-      },
+    return res.json({
+      message: "RFP created successfully",
+      rfpId: result.rfpId,
+      data: result.structured,
     });
-
-    const raw = response.text!;
-    const parsed = JSON.parse(raw);
-
-    const structured = procurementSchema.parse(parsed);
-
-    await prisma.rfp.create({
-  data: {
-    originalText: structured.originalText, 
-    structured: structured, 
-  },
- 
-});
-return res.json({
-      message: "Welcome",
-      data: structured,
+  } catch (error) {
+    console.error("Error in /structured-response:", error);
+    return res.status(500).json({
+      error: "Failed to create RFP",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
+//route to get all the vendors, currently supporting only two as Mailgun has limitations
+app.get("/vendors", async (req, res) => {
+  try {
+    const vendors = await prisma.vendors.findMany({});
+
+    return res.json({
+      vendors,
+    });
+  } catch (error) {
+    console.error("Error in /vendors:", error);
+    return res.status(500).json({
+      error: "Failed to fetch vendors",
+    });
+  }
+});
+
+//route to send RFPs to vendors
 app.post("/send-rfp", async (req, res) => {
   try {
-    const { rfpId, email } = req.body as {
-      rfpId: number;
-      email: string | string[];
-    };
+    const { rfpId, email } = req.body as SendRfpRequest;
 
-    if (!rfpId) return res.status(400).json({ error: "rfpId is required" });
-    if (!email) return res.status(400).json({ error: "email is required" });
+    if (!rfpId) {
+      return res.status(400).json({ error: "rfpId is required" });
+    }
 
-    const rfp = await prisma.rfp.findUnique({
-      where: { id: rfpId },
+    if (!email) {
+      return res.status(400).json({ error: "email is required" });
+    }
+
+    const vendorEmails = Array.isArray(email) ? email : [email];
+
+    const sendResults = await sendRfpToVendors(rfpId, vendorEmails);
+
+    const successCount = sendResults.filter((r) => r.success).length;
+
+    return res.json({
+      message: `RFP sent to ${successCount}/${sendResults.length} vendors`,
+      rfpId,
+      results: sendResults,
     });
+  } catch (error) {
+    console.error("Error in /send-rfp:", error);
+    return res.status(500).json({
+      error: "Failed to send RFP",
+      details: error instanceof Error ? error.message : "Unknown error",
+    });
+  }
+});
 
-    if (!rfp) {
+//route to handle the inbound emailsss
+app.post("/mailgun/inbound", async (req, res) => {
+  try {
+    const emailData = req.body as MailgunInboundEmail;
+
+    const savedReply = await processInboundVendorReply(emailData);
+
+    console.log("Successfully saved reply with ID:", savedReply.id);
+
+    return res.status(200).send("OK");
+  } catch (error) {
+    console.error("Error in /mailgun/inbound:", error);
+
+    return res.status(200).send("Error processed");
+  }
+});
+
+//route to compare the replies
+app.get("/rfp/:id/comparison", async (req, res) => {
+  try {
+    const rfpId = Number(req.params.id);
+
+    if (Number.isNaN(rfpId)) {
+      return res.status(400).json({ error: "Invalid rfpId" });
+    }
+
+    const comparisonResult = await generateVendorComparison(rfpId);
+
+    return res.json(comparisonResult);
+  } catch (error) {
+    console.error("Error in /rfp/:id/comparison:", error);
+
+    if (error instanceof Error && error.message === "RFP not found") {
       return res.status(404).json({ error: "RFP not found" });
     }
 
-    const structured = rfp.structured as any;
-
-    const { subject, body } = await buildRfpEmailWithAI(structured);
-
-    const toArray = Array.isArray(email) ? email : [email];
-      const mailgun = new Mailgun(FormData);
-    const mg = mailgun.client({
-    username: "api",
-    key: process.env.API_KEY! || "API_KEY",
-  });
-
-    await mg.messages.create(process.env.MAILGUN!, {
-      from:process.env.FROM_EMAIL!,
-      to: toArray,
-      subject,
-      text: body, 
+    return res.status(500).json({
+      error: "Failed to generate comparison",
+      details: error instanceof Error ? error.message : "Unknown error",
     });
-
-    return res.json({
-      message: "RFP sent successfully via Mailgun",
-      rfpId,
-      to: toArray,
-    });
-  } catch (err) {
-    console.error("Error sending RFP email (Mailgun):", err);
-    return res.status(500).json({ error: "Failed to send email" });
   }
 });
 
-
-    
-
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-

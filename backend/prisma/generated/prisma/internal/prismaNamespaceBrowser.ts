@@ -51,7 +51,10 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  Rfp: 'Rfp'
+  Rfp: 'Rfp',
+  Vendors: 'Vendors',
+  SentRfp: 'SentRfp',
+  Replies: 'Replies'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -78,6 +81,36 @@ export const RfpScalarFieldEnum = {
 } as const
 
 export type RfpScalarFieldEnum = (typeof RfpScalarFieldEnum)[keyof typeof RfpScalarFieldEnum]
+
+
+export const VendorsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email'
+} as const
+
+export type VendorsScalarFieldEnum = (typeof VendorsScalarFieldEnum)[keyof typeof VendorsScalarFieldEnum]
+
+
+export const SentRfpScalarFieldEnum = {
+  id: 'id',
+  rfpId: 'rfpId',
+  vendorEmail: 'vendorEmail',
+  mailgunMessageId: 'mailgunMessageId'
+} as const
+
+export type SentRfpScalarFieldEnum = (typeof SentRfpScalarFieldEnum)[keyof typeof SentRfpScalarFieldEnum]
+
+
+export const RepliesScalarFieldEnum = {
+  id: 'id',
+  emailId: 'emailId',
+  emailBody: 'emailBody',
+  parsed: 'parsed',
+  sentRfpId: 'sentRfpId'
+} as const
+
+export type RepliesScalarFieldEnum = (typeof RepliesScalarFieldEnum)[keyof typeof RepliesScalarFieldEnum]
 
 
 export const SortOrder = {

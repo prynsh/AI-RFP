@@ -204,6 +204,7 @@ export type RfpWhereInput = {
   originalText?: Prisma.StringFilter<"Rfp"> | string
   structured?: Prisma.JsonFilter<"Rfp">
   createdAt?: Prisma.DateTimeFilter<"Rfp"> | Date | string
+  sentRfps?: Prisma.SentRfpListRelationFilter
 }
 
 export type RfpOrderByWithRelationInput = {
@@ -211,6 +212,7 @@ export type RfpOrderByWithRelationInput = {
   originalText?: Prisma.SortOrder
   structured?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  sentRfps?: Prisma.SentRfpOrderByRelationAggregateInput
 }
 
 export type RfpWhereUniqueInput = Prisma.AtLeast<{
@@ -221,6 +223,7 @@ export type RfpWhereUniqueInput = Prisma.AtLeast<{
   originalText?: Prisma.StringFilter<"Rfp"> | string
   structured?: Prisma.JsonFilter<"Rfp">
   createdAt?: Prisma.DateTimeFilter<"Rfp"> | Date | string
+  sentRfps?: Prisma.SentRfpListRelationFilter
 }, "id">
 
 export type RfpOrderByWithAggregationInput = {
@@ -246,10 +249,10 @@ export type RfpScalarWhereWithAggregatesInput = {
 }
 
 export type RfpCreateInput = {
-  id?: number
   originalText: string
   structured: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  sentRfps?: Prisma.SentRfpCreateNestedManyWithoutRfpInput
 }
 
 export type RfpUncheckedCreateInput = {
@@ -257,12 +260,14 @@ export type RfpUncheckedCreateInput = {
   originalText: string
   structured: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
+  sentRfps?: Prisma.SentRfpUncheckedCreateNestedManyWithoutRfpInput
 }
 
 export type RfpUpdateInput = {
   originalText?: Prisma.StringFieldUpdateOperationsInput | string
   structured?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sentRfps?: Prisma.SentRfpUpdateManyWithoutRfpNestedInput
 }
 
 export type RfpUncheckedUpdateInput = {
@@ -270,6 +275,7 @@ export type RfpUncheckedUpdateInput = {
   originalText?: Prisma.StringFieldUpdateOperationsInput | string
   structured?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sentRfps?: Prisma.SentRfpUncheckedUpdateManyWithoutRfpNestedInput
 }
 
 export type RfpCreateManyInput = {
@@ -319,6 +325,11 @@ export type RfpSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
 }
 
+export type RfpScalarRelationFilter = {
+  is?: Prisma.RfpWhereInput
+  isNot?: Prisma.RfpWhereInput
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -335,6 +346,91 @@ export type IntFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type RfpCreateNestedOneWithoutSentRfpsInput = {
+  create?: Prisma.XOR<Prisma.RfpCreateWithoutSentRfpsInput, Prisma.RfpUncheckedCreateWithoutSentRfpsInput>
+  connectOrCreate?: Prisma.RfpCreateOrConnectWithoutSentRfpsInput
+  connect?: Prisma.RfpWhereUniqueInput
+}
+
+export type RfpUpdateOneRequiredWithoutSentRfpsNestedInput = {
+  create?: Prisma.XOR<Prisma.RfpCreateWithoutSentRfpsInput, Prisma.RfpUncheckedCreateWithoutSentRfpsInput>
+  connectOrCreate?: Prisma.RfpCreateOrConnectWithoutSentRfpsInput
+  upsert?: Prisma.RfpUpsertWithoutSentRfpsInput
+  connect?: Prisma.RfpWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RfpUpdateToOneWithWhereWithoutSentRfpsInput, Prisma.RfpUpdateWithoutSentRfpsInput>, Prisma.RfpUncheckedUpdateWithoutSentRfpsInput>
+}
+
+export type RfpCreateWithoutSentRfpsInput = {
+  originalText: string
+  structured: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+}
+
+export type RfpUncheckedCreateWithoutSentRfpsInput = {
+  id?: number
+  originalText: string
+  structured: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+}
+
+export type RfpCreateOrConnectWithoutSentRfpsInput = {
+  where: Prisma.RfpWhereUniqueInput
+  create: Prisma.XOR<Prisma.RfpCreateWithoutSentRfpsInput, Prisma.RfpUncheckedCreateWithoutSentRfpsInput>
+}
+
+export type RfpUpsertWithoutSentRfpsInput = {
+  update: Prisma.XOR<Prisma.RfpUpdateWithoutSentRfpsInput, Prisma.RfpUncheckedUpdateWithoutSentRfpsInput>
+  create: Prisma.XOR<Prisma.RfpCreateWithoutSentRfpsInput, Prisma.RfpUncheckedCreateWithoutSentRfpsInput>
+  where?: Prisma.RfpWhereInput
+}
+
+export type RfpUpdateToOneWithWhereWithoutSentRfpsInput = {
+  where?: Prisma.RfpWhereInput
+  data: Prisma.XOR<Prisma.RfpUpdateWithoutSentRfpsInput, Prisma.RfpUncheckedUpdateWithoutSentRfpsInput>
+}
+
+export type RfpUpdateWithoutSentRfpsInput = {
+  originalText?: Prisma.StringFieldUpdateOperationsInput | string
+  structured?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type RfpUncheckedUpdateWithoutSentRfpsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  originalText?: Prisma.StringFieldUpdateOperationsInput | string
+  structured?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+
+/**
+ * Count Type RfpCountOutputType
+ */
+
+export type RfpCountOutputType = {
+  sentRfps: number
+}
+
+export type RfpCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  sentRfps?: boolean | RfpCountOutputTypeCountSentRfpsArgs
+}
+
+/**
+ * RfpCountOutputType without action
+ */
+export type RfpCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RfpCountOutputType
+   */
+  select?: Prisma.RfpCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * RfpCountOutputType without action
+ */
+export type RfpCountOutputTypeCountSentRfpsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SentRfpWhereInput
+}
 
 
 export type RfpSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -342,6 +438,8 @@ export type RfpSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   originalText?: boolean
   structured?: boolean
   createdAt?: boolean
+  sentRfps?: boolean | Prisma.Rfp$sentRfpsArgs<ExtArgs>
+  _count?: boolean | Prisma.RfpCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["rfp"]>
 
 export type RfpSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -366,10 +464,18 @@ export type RfpSelectScalar = {
 }
 
 export type RfpOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "originalText" | "structured" | "createdAt", ExtArgs["result"]["rfp"]>
+export type RfpInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  sentRfps?: boolean | Prisma.Rfp$sentRfpsArgs<ExtArgs>
+  _count?: boolean | Prisma.RfpCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type RfpIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type RfpIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $RfpPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Rfp"
-  objects: {}
+  objects: {
+    sentRfps: Prisma.$SentRfpPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     originalText: string
@@ -769,6 +875,7 @@ readonly fields: RfpFieldRefs;
  */
 export interface Prisma__RfpClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  sentRfps<T extends Prisma.Rfp$sentRfpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Rfp$sentRfpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SentRfpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -819,6 +926,10 @@ export type RfpFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
+  /**
    * Filter, which Rfp to fetch.
    */
   where: Prisma.RfpWhereUniqueInput
@@ -837,6 +948,10 @@ export type RfpFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
+  /**
    * Filter, which Rfp to fetch.
    */
   where: Prisma.RfpWhereUniqueInput
@@ -854,6 +969,10 @@ export type RfpFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Omit specific fields from the Rfp
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
   /**
    * Filter, which Rfp to fetch.
    */
@@ -903,6 +1022,10 @@ export type RfpFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
+  /**
    * Filter, which Rfp to fetch.
    */
   where?: Prisma.RfpWhereInput
@@ -951,6 +1074,10 @@ export type RfpFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
+  /**
    * Filter, which Rfps to fetch.
    */
   where?: Prisma.RfpWhereInput
@@ -993,6 +1120,10 @@ export type RfpCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
    * Omit specific fields from the Rfp
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
   /**
    * The data needed to create a Rfp.
    */
@@ -1041,6 +1172,10 @@ export type RfpUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
    * Omit specific fields from the Rfp
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
   /**
    * The data needed to update a Rfp.
    */
@@ -1108,6 +1243,10 @@ export type RfpUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
+  /**
    * The filter to search for the Rfp to update in case it exists.
    */
   where: Prisma.RfpWhereUniqueInput
@@ -1134,6 +1273,10 @@ export type RfpDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
+  /**
    * Filter which Rfp to delete.
    */
   where: Prisma.RfpWhereUniqueInput
@@ -1154,6 +1297,30 @@ export type RfpDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
+ * Rfp.sentRfps
+ */
+export type Rfp$sentRfpsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SentRfp
+   */
+  select?: Prisma.SentRfpSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SentRfp
+   */
+  omit?: Prisma.SentRfpOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SentRfpInclude<ExtArgs> | null
+  where?: Prisma.SentRfpWhereInput
+  orderBy?: Prisma.SentRfpOrderByWithRelationInput | Prisma.SentRfpOrderByWithRelationInput[]
+  cursor?: Prisma.SentRfpWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SentRfpScalarFieldEnum | Prisma.SentRfpScalarFieldEnum[]
+}
+
+/**
  * Rfp without action
  */
 export type RfpDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1165,4 +1332,8 @@ export type RfpDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the Rfp
    */
   omit?: Prisma.RfpOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RfpInclude<ExtArgs> | null
 }

@@ -384,7 +384,10 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 
 export const ModelName = {
-  Rfp: 'Rfp'
+  Rfp: 'Rfp',
+  Vendors: 'Vendors',
+  SentRfp: 'SentRfp',
+  Replies: 'Replies'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -400,7 +403,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "rfp"
+    modelProps: "rfp" | "vendors" | "sentRfp" | "replies"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -478,6 +481,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Vendors: {
+      payload: Prisma.$VendorsPayload<ExtArgs>
+      fields: Prisma.VendorsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.VendorsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.VendorsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload>
+        }
+        findFirst: {
+          args: Prisma.VendorsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.VendorsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload>
+        }
+        findMany: {
+          args: Prisma.VendorsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload>[]
+        }
+        create: {
+          args: Prisma.VendorsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload>
+        }
+        createMany: {
+          args: Prisma.VendorsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.VendorsCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload>[]
+        }
+        delete: {
+          args: Prisma.VendorsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload>
+        }
+        update: {
+          args: Prisma.VendorsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload>
+        }
+        deleteMany: {
+          args: Prisma.VendorsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.VendorsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.VendorsUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload>[]
+        }
+        upsert: {
+          args: Prisma.VendorsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$VendorsPayload>
+        }
+        aggregate: {
+          args: Prisma.VendorsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateVendors>
+        }
+        groupBy: {
+          args: Prisma.VendorsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VendorsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.VendorsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.VendorsCountAggregateOutputType> | number
+        }
+      }
+    }
+    SentRfp: {
+      payload: Prisma.$SentRfpPayload<ExtArgs>
+      fields: Prisma.SentRfpFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SentRfpFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SentRfpFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload>
+        }
+        findFirst: {
+          args: Prisma.SentRfpFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SentRfpFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload>
+        }
+        findMany: {
+          args: Prisma.SentRfpFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload>[]
+        }
+        create: {
+          args: Prisma.SentRfpCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload>
+        }
+        createMany: {
+          args: Prisma.SentRfpCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.SentRfpCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload>[]
+        }
+        delete: {
+          args: Prisma.SentRfpDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload>
+        }
+        update: {
+          args: Prisma.SentRfpUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload>
+        }
+        deleteMany: {
+          args: Prisma.SentRfpDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SentRfpUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.SentRfpUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload>[]
+        }
+        upsert: {
+          args: Prisma.SentRfpUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SentRfpPayload>
+        }
+        aggregate: {
+          args: Prisma.SentRfpAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSentRfp>
+        }
+        groupBy: {
+          args: Prisma.SentRfpGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SentRfpGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SentRfpCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SentRfpCountAggregateOutputType> | number
+        }
+      }
+    }
+    Replies: {
+      payload: Prisma.$RepliesPayload<ExtArgs>
+      fields: Prisma.RepliesFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RepliesFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RepliesFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload>
+        }
+        findFirst: {
+          args: Prisma.RepliesFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RepliesFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload>
+        }
+        findMany: {
+          args: Prisma.RepliesFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload>[]
+        }
+        create: {
+          args: Prisma.RepliesCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload>
+        }
+        createMany: {
+          args: Prisma.RepliesCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RepliesCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload>[]
+        }
+        delete: {
+          args: Prisma.RepliesDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload>
+        }
+        update: {
+          args: Prisma.RepliesUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload>
+        }
+        deleteMany: {
+          args: Prisma.RepliesDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RepliesUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RepliesUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload>[]
+        }
+        upsert: {
+          args: Prisma.RepliesUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RepliesPayload>
+        }
+        aggregate: {
+          args: Prisma.RepliesAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateReplies>
+        }
+        groupBy: {
+          args: Prisma.RepliesGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RepliesGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RepliesCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RepliesCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -525,6 +750,36 @@ export const RfpScalarFieldEnum = {
 } as const
 
 export type RfpScalarFieldEnum = (typeof RfpScalarFieldEnum)[keyof typeof RfpScalarFieldEnum]
+
+
+export const VendorsScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  email: 'email'
+} as const
+
+export type VendorsScalarFieldEnum = (typeof VendorsScalarFieldEnum)[keyof typeof VendorsScalarFieldEnum]
+
+
+export const SentRfpScalarFieldEnum = {
+  id: 'id',
+  rfpId: 'rfpId',
+  vendorEmail: 'vendorEmail',
+  mailgunMessageId: 'mailgunMessageId'
+} as const
+
+export type SentRfpScalarFieldEnum = (typeof SentRfpScalarFieldEnum)[keyof typeof SentRfpScalarFieldEnum]
+
+
+export const RepliesScalarFieldEnum = {
+  id: 'id',
+  emailId: 'emailId',
+  emailBody: 'emailBody',
+  parsed: 'parsed',
+  sentRfpId: 'sentRfpId'
+} as const
+
+export type RepliesScalarFieldEnum = (typeof RepliesScalarFieldEnum)[keyof typeof RepliesScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -730,6 +985,9 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   rfp?: Prisma.RfpOmit
+  vendors?: Prisma.VendorsOmit
+  sentRfp?: Prisma.SentRfpOmit
+  replies?: Prisma.RepliesOmit
 }
 
 /* Types for Logging */

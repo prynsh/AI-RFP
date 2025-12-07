@@ -44,3 +44,18 @@ export { Prisma }
  * 
  */
 export type Rfp = Prisma.RfpModel
+/**
+ * Model Vendors
+ * 
+ */
+export type Vendors = Prisma.VendorsModel
+/**
+ * Model SentRfp
+ * 
+ */
+export type SentRfp = Prisma.SentRfpModel
+/**
+ * Model Replies
+ * 
+ */
+export type Replies = Prisma.RepliesModel

@@ -14,16 +14,35 @@ datasource db {
 }
 
 
-model Rfp{
-  id            Int @unique @default(autoincrement())
-  originalText  String
-  structured    Json
-  createdAt     DateTime @default(now())
+model Rfp {
+  id           Int       @id @default(autoincrement())
+  originalText String
+  structured   Json
+  createdAt    DateTime  @default(now())
 
+  sentRfps     SentRfp[]
 }
 
-model Vendors{
-  id          Int @unique @default(autoincrement())
-  name        String
-  email       String
+model Vendors {
+  id    Int    @id @default(autoincrement())
+  name  String
+  email String @unique
+}
+
+model SentRfp {
+  id               Int       @id @default(autoincrement())
+  rfp              Rfp       @relation(fields: [rfpId], references: [id])
+  rfpId            Int
+  vendorEmail      String
+  mailgunMessageId String 
+  replies          Replies[]
+}
+
+model Replies {
+  id         Int    @id @default(autoincrement())
+  emailId    String
+  emailBody  String 
+  parsed     String
+  sentRfp    SentRfp @relation(fields: [sentRfpId], references: [id])
+  sentRfpId  Int
 }
